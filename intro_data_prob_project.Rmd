@@ -1,0 +1,171 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+Loading the dataset
+
+```{r load-data}
+load("brfss2013.RData")
+```
+
+
+
+* * *
+
+## Part 1: Data
+the parmeterts in the dataset brfss2013 can be read from the following
+```{r}
+names(brfss2013)
+```
+
+
+* * *
+
+## Part 2: Research questions
+
+**Research quesion 1:**
+How the smoking habit of the person affect the chronic diseases such as 
+
+1-heart attack ( cvdinfr4 )
+
+2-angina or coronary heart disease ( cvdcrhd4 )
+
+3-had a stroke ( cvdstrk3 ) 
+
+on the basis of the age from the given dataset?
+
+Aim- The research can be used to see the affect of smoking habit on the chronic heart diseases and tell us more about the smoking affect and so can we put control on it according to the results. 
+
+**Research quesion 2:**
+How the inadequate sleep (sleptim1) affect the obesity in the different sex groups ?
+
+Aim- To see that how the sleeping affect the obesity and the results could tell us about the sleeping habit of the different sex and their obesity level and can be help to provide people with the better sleeping habit information
+which can be used to control obesity.
+
+**Research quesion 3:**
+How does the Drinking habbit of a individual changes based on their employment and income level?
+
+Aim- The study will help to target the specific population for the content related to the alcoholic beverages and marketing or any other thing that is mainly based on the alcoholic drinks.
+
+The further conclusion of the each question is done below the analysis itself.
+
+## Fields used from dataset
+ 
+1-cvdinfr4: heart attack 
+
+2-cvdcrhd4: angina or coronary heart disease
+
+3-cvdstrk3: had a stroke
+
+4-smokday2: Frequency Of Days Now Smoking
+
+5-Sex    :  Sex of Respondent
+
+6-X_age_g:  Groups of repondents by Age
+
+7-X_rfbmi5: Overweight or obese.
+
+8-sleptim1: How Much Time Do You Sleep
+
+9-employ1: Employment Status
+
+10-income2: Income Level
+
+11-avedrnk2: Avg Alcoholic Drinks Per Day In Past 30
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+**Research quesion 1:**
+
+```{r}
+filt_crit <- c("Yes","No")
+smoker_effect <- brfss2013 %>% select(smokday2,cvdinfr4,cvdcrhd4,cvdstrk3,X_age_g) %>% filter(cvdinfr4 %in% filt_crit) %>% filter(cvdcrhd4 %in% filt_crit) %>% filter(cvdstrk3 %in% filt_crit)
+#brfss2013 %>% group_by(smokday2) %>% summarise(heart_problem = sum(cvdinfr4 == "Yes")/n())
+ggplot(smoker_effect,aes(x = smokday2, fill = cvdinfr4)) + geom_bar() +facet_grid(~X_age_g) + coord_flip() +                     ggtitle("Smoking Affect on heart")
+
+```
+
+* * * 
+
+Summary Statistics- 
+The data above only shows the peple of smoking class and is an observation from the given dataset and all the things are selected at random. Also it came from an observational study and nothing causal about the smoking habbit and heart diseases can be stated or explained from it.
+
+* * *
+
+* * *
+
+Generalize-
+We have taken the  data which is particularly is responsible for the section of people who are smokers and particularly in america and the above graph that the smoking in not a major cause of these heart problems in those people but the results seem daunting and further more data can be used to verify if. As the observation from the data seems to tell the negative relation between the smoking habit and heart diseases but we cannot say for sure that it is has some causal relation.   
+
+* * *
+
+
+**Research quesion 2:**
+
+```{r}
+sleep_habbit <- brfss2013 %>% select(sleptim1,X_rfbmi5,sex) %>% filter(sex %in% c("Male","Female")) %>% filter(!is.na(sleptim1)) %>% filter(X_rfbmi5 %in% c("Yes", "No"))
+ggplot(sleep_habbit,aes(x = sleptim1 ,fill =X_rfbmi5)) + geom_bar() + facet_grid(~sex) + coord_flip() + ggtitle("Affect of Sleeping")
+
+```
+
+* * *
+
+Summary Statistics-
+The graph above shows that there is a positive relation between the sleeping habit and the obesity of the people so the data can be generalized to the people for the different sex groups. Also it came from an observational study and nothing causal about the obesity can be explained from it.
+
+* * *
+
+* * *
+
+Generalize-
+Is seems from the above graph that the sleeping habit does affect the obesity of the male and female also it can be observer that the data is somewhat similar in both the sex group, sleeping does affect obesity somewhere as observation shows but the cause for the obesity cannot be stated here so a good sleeping habit is preferred.
+A good sleep of 7-8 hours will be considered good for the people to stay comparably less obese.
+
+* * *
+
+
+**Research quesion 3:**
+
+```{r}
+Alcoholic_drinking <- brfss2013 %>% select(avedrnk2,employ1,income2)  %>% filter(!is.na(income2)) %>% filter(!is.na(avedrnk2))
+ggplot(Alcoholic_drinking, aes(x = employ1 ,fill =avedrnk2)) + geom_bar() + facet_grid(~income2) + ggtitle("Drinking habbit on the basis of income and employment")
+ggplot(data = Alcoholic_drinking, aes(x = employ1 , y = avedrnk2 ))+
+geom_count () + 
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ facet_grid(~income2) + coord_flip()+
+xlab("Employment type") +
+ylab ("Drinking_pattern")
+
+```
+
+* * * 
+Is seems from the above graph that the Alcoholic drinking is somewhat dependent on the income and employment
+
+Summary Staticts
+From the graph it can be seen that there is decrasing trend in the drinking/ number of drinks taken by Employed for the wages with the incrasing income level.  so the comment can be made that income plays a role in drinking habbit of the american persons who are employeed for the wages. Also same goes for the retired persons. They have consumed relatively less alcoholic drinks in the last 30 days 
+
+* * *
+
+* * *
+
+Generalize-
+The above criteria can be generalized to the people in America who are employed for wages and high income.
+As the sample is random so it is rather good to say that the data predicts the observation not the causal but from data it can be inferred that the income and employment type somewhere related to these mentioned criteria.
+
+* * *
